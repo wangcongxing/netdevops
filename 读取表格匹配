@@ -1,0 +1,18 @@
+# -*- coding: utf-8 -*-
+import xlrd #excel的读
+import re
+
+prog = re.compile("\+08:00") #正则表达式匹配+08时区
+
+workbook = xlrd.open_workbook("Result-206.xls","r")     #打开excel
+
+sheet = workbook.sheets()[0]  #读取表
+nrows = sheet.nrows        #行数
+print(nrows)
+for n in range(5,nrows):         
+    value = sheet.cell_value(n-1,5)       #读取值
+    try:
+        write = prog.search(value).group(0) 
+    except AttributeError:
+        print(sheet.cell_value(n-1,1))
+
