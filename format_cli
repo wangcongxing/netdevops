@@ -1,0 +1,33 @@
+import paramiko
+import time
+from textfsm import TextFSM
+'''
+执行单条命令输出（格式化）输出
+'''
+def command(username,password,ip,send):        #执行单条命令输出回显
+    ssh_client = paramiko.SSHClient()             #paramiko登录设备
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client.connect(hostname=ip,username=username,password=password)
+    command = ssh_client.invoke_shell()
+    command.send(send + '\n')
+    command.send('    \n')
+    time.sleep(1)
+    output = command.recv(65535).decode('utf-8')
+    return output
+
+def format_cli(username,password,ip,send):              #执行单条命令输出格式化数据
+    ssh_client = paramiko.SSHClient()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh_client.connect(hostname=ip,username=username,password=password)
+    command = ssh_client.invoke_shell()
+    command.send(send + '\n')
+    command.send('    \n')
+    time.sleep(1)
+    output = command.recv(65535).decode('utf-8')    #命令执行结果
+    path = 'templates/'+send.replace(' ','_')      #模板放置在目录下templates文件夹
+    f = open(path)                                 #打开TextFSM模板文件
+    tem = TextFSM(f).ParseText(output)             #格式化数据
+    return tem
+
+a = command('admin','Aa123123','192.168.1.1','display interface brief')
+print(a)
