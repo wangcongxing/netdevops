@@ -1,0 +1,15 @@
+import jinja2
+import csv
+
+f = open('aa.csv')
+reader = csv.DictReader(f)  #生成一组’有序的字典‘的对象，for循环出字典
+
+jinjaFile = jinja2.FileSystemLoader('./')       #模板路径
+jinjaEnv = jinja2.Environment(loader=jinjaFile)    
+messagejinja = jinjaEnv.get_template('confjinja2')
+
+for row in reader :
+    confile = open('./'+row['ip']+'txt','w')       #生成配置文件
+    tempCon = messagejinja.render(row)            #字典加模板得到配置
+    confile.write(tempCon)                        #写入
+    confile.close()
