@@ -13,3 +13,5 @@ for row in reader :
     tempCon = messagejinja.render(row)            #字典加模板得到配置
     confile.write(tempCon)                        #写入
     confile.close()
+
+缺点csv没有层次，不如yaml灵活
