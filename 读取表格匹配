@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#读取eSight批量执行的结果，用正则表达式匹配，判断是否是+08时区
+
+
 import xlrd #excel的读
 import re
 
