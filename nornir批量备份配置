@@ -1,0 +1,22 @@
+from nornir import InitNornir
+from nornir_netmiko import netmiko_send_command
+from nornir_utils.plugins.functions import print_result
+from nornir.core.filter import F
+
+nr = InitNornir(config_file="inventory\config.yaml")        #初始化nornir
+swlist = nr.filter(F(groups__contains='ensp'))              #过滤设备，包含’ensp‘组
+
+def save_cfg(task):                                                #task任务
+    output = task.run(netmiko_send_command,command_string="dis cu")      #执行netmiko返回结果
+    confile = open('cfg/'+task.host.hostname+'_'+task.host.name+'.cfg','w') #创建cfg文件
+    out = str(output[0])                         #output返回
+    confile.write(out)
+    confile.close()
+    return output
+results = swlist.run(task=save_cfg)
+
+
+print_result(results)
+
+print(results['设备名'])   
+#返回类型为AggregatedResult (save_cfg): {'sw1': MultiResult: [Result: "save_cfg", Result: "netmiko_send_command"],
