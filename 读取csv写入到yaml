@@ -1,0 +1,11 @@
+import csv
+import yaml
+f = open('aa.csv')           #打开csv
+reader = csv.DictReader(f)  #生成一组’有序的字典‘的对象，for循环出字典
+ya = open(r"inventory\hosts.yaml","a")      #打开yaml文件，追加模式
+for i in reader :
+    name = i["name"]
+    del i["name"]
+    out = {name:i}            #读取name值，删除namexiang
+    out[name]['groups'] = ["switch"]
+    print(yaml.dump(out,ya))   #写入到yaml文件
