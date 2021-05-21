@@ -16,6 +16,11 @@ huawei = nr.inventory.filter(F(groups__contains='access') | F(groups__contains='
 for hostname,host_obj in huawei.hosts.items():
     print(hostname,host_obj.hostname,host_obj.port)           #返回设备名（外），设备名，接口
 
+#swlist = nr.filter(hostname = '1.1.1.13') 
+#for hostname,host_obj in swlist.inventory.hosts.items():  注意这个地方，和上文加起来是nr.inventory.hosts.items().xxx
+#    print(host_obj.port)
+
+#task.host.name+task.host.hostname     task任务里面，取设备名和IP
 
 # def show_cmds(task):                                     
 #     cmds = task.host.data            读取host的data信息
