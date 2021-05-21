@@ -1,26 +1,42 @@
 from nornir import InitNornir
 from nornir_netmiko import netmiko_send_command
 from nornir_utils.plugins.functions import print_result
-from nornir.core.filter import F
+import shutil,os
 
 nr = InitNornir(config_file="inventory\config.yaml")        #初始化nornir
-swlist = nr.filter(F(groups__contains='ensp'))              #过滤设备，包含’ensp‘组
+
+def MGMT_g_filter(host) :
+    if host.data['type'] == 'NE40E-X8A' and host.data['qu'] == 'g' or host.data['type'] == 'S12700E-8' and host.data['qu'] == 'g' :
+        return True
+    return False
+swlist = nr.filter(filter_func=MGMT_g_filter)            #过滤设备，引用函数
+
+try:
+    shutil.rmtree('g')                           #删除文件夹，重新创建
+except:
+    os.makedirs('g')
+os.makedirs('g/NE40E-X8A')
+os.makedirs('g/S12700E-8')
 
 def save_cfg(task):                                                #task任务
     output = task.run(netmiko_send_command,command_string="dis cu")      #执行netmiko返回结果
     if task.host.data['type'] == 'S12700E-8' :
-        confile = open(task.host.data['type']+ '/' +task.host.hostname+task.host.data['desc']+'.cfg','w')
+        confile = open('./'+task.host.data['qu']+'/'+task.host.data['type']+ '/' +task.host.hostname+'_'+task.host.data['desc']+'.cfg','w')
         #创建cfg文件,task.host.name取hosts的值
     else:
-        confile = open(task.host.data['type']+ '/' +task.host.name+task.host.hostname+'.cfg','w')
+        confile = open('./'+task.host.data['qu']+'/'+task.host.data['type']+ '/' +task.host.name+'_'+'_'+task.host.hostname+'.cfg','w')
     out = str(output[0])                         #取output返回值，改str
     confile.write(out)           #写入文件
     confile.close()
     return output
 results = swlist.run(task=save_cfg)
+
 print_result(results)
+
 # 需要创建hosts文件
 # 目录下创建三个型号对应文件夹，否则报错
+#注意，只有部分设备保存成功，修改\netmiko\base_connection.py的conn_timeout=10秒
+
 
 
 print(results['设备名'])   
