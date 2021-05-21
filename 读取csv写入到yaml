@@ -5,7 +5,25 @@ reader = csv.DictReader(f)  #生成一组’有序的字典‘的对象，for循
 ya = open(r"inventory\hosts.yaml","a")      #打开yaml文件，追加模式
 for i in reader :
     name = i["name"]
-    del i["name"]
-    out = {name:i}            #读取name值，删除namexiang
-    out[name]['groups'] = ["switch"]
+    type = i["type"]
+    desc = i["desc"]
+    qu = i["qu"]
+    del i["name"],i["desc"],i['type'],i['qu']    #删除data下三项和name
+    i['data'] = {'type':type,'desc':desc,'qu':qu} #添加data元素
+    out = {name:i}
     print(yaml.dump(out,ya))   #写入到yaml文件
+'''这个是效果
+wuha5s2art01:
+data:
+    desc: "\u6838"
+    qu: g
+    type: s5700
+hostname: 1.1.1.1
+platform: huawei
+port: '22'
+'''
+
+'''这是表格格式
+name	hostname	qu	port	platform	type	desc
+sw1     1.1.1.1	    g	22	    huawei	    s5700	核心sw
+'''
