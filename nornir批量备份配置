@@ -8,15 +8,28 @@ swlist = nr.filter(F(groups__contains='ensp'))              #过滤设备，包�
 
 def save_cfg(task):                                                #task任务
     output = task.run(netmiko_send_command,command_string="dis cu")      #执行netmiko返回结果
-    confile = open('cfg/'+task.host.hostname+'_'+task.host.name+'.cfg','w') #创建cfg文件
-    out = str(output[0])                         #output返回
-    confile.write(out)
+    if task.host.data['type'] == 'S12700E-8' :
+        confile = open(task.host.data['type']+ '/' +task.host.hostname+task.host.data['desc']+'.cfg','w')
+        #创建cfg文件,task.host.name取hosts的值
+    else:
+        confile = open(task.host.data['type']+ '/' +task.host.name+task.host.hostname+'.cfg','w')
+    out = str(output[0])                         #取output返回值，改str
+    confile.write(out)           #写入文件
     confile.close()
     return output
 results = swlist.run(task=save_cfg)
-
-
 print_result(results)
+# 需要创建hosts文件
+# 目录下创建三个型号对应文件夹，否则报错
+
 
 print(results['设备名'])   
 #返回类型为AggregatedResult (save_cfg): {'sw1': MultiResult: [Result: "save_cfg", Result: "netmiko_send_command"],
+wuha5s2art01:
+  data:
+    desc: "\u7531\u5668-\u4E3B"
+    qu: g
+    type: NE40E-X8A
+  hostname: 1.1.1.1
+  platform: huawei
+  port: '22'
