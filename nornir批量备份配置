@@ -39,7 +39,7 @@ print_result(results)
 
 
 
-print(results['设备名'])   
+print(results['设备名'])  #task函数外先取设备名，再取设备里面，task函数内已经是单台设备task.host.data 
 #返回类型为AggregatedResult (save_cfg): {'sw1': MultiResult: [Result: "save_cfg", Result: "netmiko_send_command"],
 wuha5s2art01:
   data:
