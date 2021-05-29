@@ -1,0 +1,35 @@
+# -*- coding: utf-8 -*-
+import paramiko
+import time
+import re
+ip =('192.168.1.2','192.168.1.3')
+ne40 = ('192.168.1.2')
+
+prog = re.compile('#[\s\S]*return')
+
+ssh_client = paramiko.SSHClient()             #paramiko登录设备
+ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_client.connect(hostname='192.168.1.1',username='admin',password='Aa123123')
+command = ssh_client.invoke_shell()
+print('跳板机连接成功')
+for i in ip :                             #循环执行命令
+    command.send(f'telnet {i}\n')
+    time.sleep(1)
+    command.send('admin\n')
+    time.sleep(1)
+    command.send('Aa123123\n')
+    # time.sleep(1)
+    command.send('screen-length 0 temporary\n')
+    command.send('dis cu\n')            #执行命令
+    command.send('quit\n')
+    time.sleep(1)
+    output = command.recv(65535).decode('utf-8')
+    # print(output)
+    if i in ne40 :
+        confile = open('./g/NE40E-X8A/'+i+'.cfg','w',newline='\n')    #注意\n避免输出空行
+    else:
+        confile = open('./g/S12700E-8/' +i+'.cfg','w',newline='\n')
+    out = prog.search(output).group()                       #取output返回值，改str
+    print(out)
+    confile.write(out)           #写入文件
+    confile.close()
