@@ -3,14 +3,8 @@ import paramiko
 import time
 import re
 
-hop_info = {
-    'user': 'admin',
-    'password': 'Aa123123',
-    'ip': '10.1.1.1',}           #跳板机信息
-dest_info = {
-    'user': 'admin',
-    'password': 'Aa123123',
-    'ip': '10.1.1.3',}            #目的主机信息
+hop_info = {'user': 'admin','password': 'Aa123123','ip': '10.1.1.1',}           #跳板机信息
+dest_info = {'user': 'admin','password': 'Aa123123','ip': '10.1.1.3',}            #目的主机信息
 cli = ['system','sysname sw3','dis clock']      #执行命令列表
 
 def hop_telnet (hop_info,dest_info,cli=[]) :
