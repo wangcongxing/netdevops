@@ -18,7 +18,7 @@ except:
 os.makedirs('g/NE40E-X8A')
 os.makedirs('g/S12700E-8')
 
-def save_cfg(task):                                                #task任务
+def save_cfg(task):                                                #task任务，文件名这块可以直接写入到yaml文件
     output = task.run(netmiko_send_command,command_string="dis cu")      #执行netmiko返回结果
     if task.host.data['type'] == 'S12700E-8' :
         confile = open('./'+task.host.data['qu']+'/'+task.host.data['type']+ '/' +task.host.hostname+'_'+task.host.data['desc']+'.cfg','w')
