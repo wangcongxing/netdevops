@@ -27,4 +27,10 @@ def hop_telnet (hop_info,dest_info,cli=[]) :
     ssh_client.close()
     out = re.search(f'.*{cli[0]}[\s\S]*\n',output).group()                       #取output返回值，改str
     return out
-print(hop_telnet(hop_info,dest_info,cli))
+confile = open('a.txt','w',newline='')          #注意newline=''解决空行问题
+ou = hop_ssh(hop_info,dest_info,cli)
+confile.write(confile)
+confile.close()
+print(ou)
+
+
