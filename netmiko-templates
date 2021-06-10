@@ -1,0 +1,18 @@
+from netmiko import Netmiko
+
+device_info = {
+    'device_type': 'huawei',
+    'ip': '192.168.1.1',
+    'username': 'admin',
+    'password': 'Aa123123',
+    'port' : 22,          # optional, defaults to 22
+    'secret': 'secret',     # optional, defaults to ''
+}
+
+net_connect = Netmiko(**device_info)
+out = net_connect.send_command('display interface brief',use_textfsm=True) #就这一个参数，输出格式化，重点是templates的index
+print(out)
+#重点一 更改环境变量 ECHO %NET_TEXTFSM%  到模板目录
+#重点二 修改templates的index文件
+#huawei_vrp_display_interface_brief.textfsm, .*, huawei, disp[[lay]] inter[[face]] br[[ief]]
+#模板文件名，设备名不涉及，Platform平台要对应，命令匹配上
