@@ -1,0 +1,47 @@
+from nornir import InitNornir
+from nornir_netmiko import netmiko_send_command
+from netmiko import Netmiko
+from nornir_utils.plugins.functions import print_result
+from nornir.core.filter import F
+import csv
+
+nr = InitNornir(config_file="inventory\config.yaml")
+# def ensp_filter(host) :
+#     if host.data['type'] == 'ensp' and host.hostname == '192.168.1.1' :
+#         return True
+#     return False
+# swlist = nr.filter(filter_func=ensp_filter)
+
+def dis_temperature(task) :
+    output = task.run(netmiko_send_command,command_string="display temp all",use_textfsm=True)
+    out = output.result           #神来之笔，输出结果变成list，不然不可迭代
+    f = open('temp.csv','a',newline='')
+    writer = csv.DictWriter(f,['ip','slot','current'])
+    for i in out :
+        i['ip'] = task.host.hostname
+        writer.writerow(i)
+        print(i)
+    return out
+def dis_temp(task) :      #task里面引用’原生‘netmiko，异步运行
+    host = task.host
+    dev_info = dict(
+        ip = host.hostname,
+        username = host.username,
+        password = host.password,
+        port = host.port,
+        device_type = host.platform
+    )
+    net_connect = Netmiko(**dev_info)
+    output = net_connect.send_command('display temperature all',use_textfsm=True)
+    f = open('temp.csv','a',newline='')
+    writer = csv.DictWriter(f,['ip','slot','current'])
+    for i in output :
+        i['ip'] = host.hostname
+        writer.writerow(i)
+        print(i)
+    return output
+
+results = nr.run(task=dis_temperature)
+
+
+
