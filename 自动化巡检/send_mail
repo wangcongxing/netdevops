@@ -1,0 +1,28 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+import time
+
+times = time.strftime('%Y-%m-%d',time.localtime())    #获取年月日
+
+msg = MIMEMultipart()       #邮件主体
+msg['from'] = 'zouzhihao1@huawei.com'    #发件人
+msg['subject'] = f'{times}小网设备温度报表' #邮件主题
+msg['to'] = 'zouzhihao1@huawei.com' #收件人
+# msg['cc'] = 'aa@huawei.com'    #抄送人
+
+#邮件正文
+content = "温度大于55C°的设备有："         #文本或html内容
+text = MIMEText(content,'html','utf-8')  #文本是plain
+msg.attach(text)
+
+#添加附件
+csvfile = MIMEApplication(open('name_ip.csv','rb').read())       #打开附件
+csvfile.add_header('Content-Disposition', 'attachment', filename='name_ip.csv')#filename为显示的文件名
+msg.attach(csvfile)
+
+smtp = smtplib.SMTP('smtp.huawei.com','25')       #smtp服务器信息
+smtp.login('zwx1020858','xxx')                   #用户密码
+smtp.sendmail(msg['from'],msg['to'],msg.as_string())      #发送邮件
+
