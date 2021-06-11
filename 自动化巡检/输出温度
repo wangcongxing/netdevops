@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+from nornir import InitNornir
+from nornir_netmiko import netmiko_send_command
+from nornir_utils.plugins.functions import print_result
+import csv
+import time
+from mail_csv import mail_csv
+
+nr = InitNornir(config_file=".\inventory\config.yaml")
+def y_S6730(host) :
+    if not host.hostname == 'xxxx' :
+        return True
+    return False
+swlist = nr.filter(filter_func=y_S6730)
+
+csvname = f'temp_{time.strftime("%m-%d",time.localtime())}.csv'       #文件格式为temp_日期
+f = open(csvname,'w',newline='')
+writer = csv.DictWriter(f,['ip','slot','status','current'])
+writer.writeheader()
+def dis_temperature(task) :
+    output = task.run(netmiko_send_command,command_string="display temp all",use_textfsm=True)
+    out = output.result           #神来之笔，输出结果变成list，不然不可迭代
+    for i in out :
+        i['ip'] = task.host.hostname
+        writer.writerow(i)
+    return out
+results = swlist.run(task=dis_temperature)
+
+time.sleep(120)
+f.close()
+mail_csv(csvname,'123')
