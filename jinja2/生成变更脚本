@@ -40,3 +40,8 @@ for row in reader :      #循环出每个设备的字典
         print(i)
     confile.close()   #关闭txt文件
     wb.save('6730.xlsx')  #保存表格
+   
+
+
+
+#jinja2模板：关键字用{{xxx}}替换
