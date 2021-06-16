@@ -1,0 +1,42 @@
+import jinja2
+import csv
+from openpyxl import Workbook
+
+wb = Workbook()           #新建表格文件
+
+f = open('s6730.csv')       #打开csv文件，格式为
+# ----------
+# conn	vip	mask	gw	 name
+# 互连ip  管理ip 掩码  网关   设备名
+# ----------
+
+reader = csv.DictReader(f)  #生成一组’有序的字典‘的对象，可以for循环出字典
+
+jinjaFile = jinja2.FileSystemLoader('./')       #模板路径
+jinjaEnv = jinja2.Environment(loader=jinjaFile)
+messagejinja = jinjaEnv.get_template('confjinja2') #打开模板文件
+
+for row in reader :      #循环出每个设备的字典
+    print(row)
+    n = 1       #预置表格行号为1，从第一行开始
+    confile = open('./6730/'+'test.txt','w')       #生成配置文件
+    tempCon = messagejinja.render(row)            #字典加模板得到配置
+    confile.write(tempCon)                        #写入到配置文件
+    confile.close()                        #关闭
+    cfg = open('./6730/test.txt')          #再打开配置文件
+# ----------
+# jinja2生成的结果，不能直接用for循环，所以保存为txt文件后再读取
+# ----------
+    cfg.seek(0)    #注意，多次循环打开文件，文件指针回到0
+    ws = wb.create_sheet(row['name'])    #新建子表，名字为设备名
+    lie = 1           #由于结果为两列，一列为变更脚本，一列为回退脚本。预置列为1
+    for i in cfg :     #逐行获取配置
+        i = i.strip()   #注意，移除头尾的字符（空格，换行符等）
+        if i == '回退脚本' : #检测到回退脚本这行换第二列，同时行数置1
+            lie = 2
+            n = 1
+        ws.cell(n,lie).value = i #写入配置到单元格
+        n = n+1
+        print(i)
+    confile.close()   #关闭txt文件
+    wb.save('6730.xlsx')  #保存表格
