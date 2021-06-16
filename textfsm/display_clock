@@ -1,0 +1,6 @@
+Value date (20\S+)
+Value time (\d+:\d+:\d+)
+Value timezone (\S\d+:\d+)
+
+Start
+ ^${date}\s+${time}${timezone} -> Record
