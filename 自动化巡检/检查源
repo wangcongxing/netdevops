@@ -1,0 +1,13 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+    <body>
+    <script>
+    var person=[{'slot': '13', 'current':'56', 'ip': '13.255.1.1'}];
+    for (x in person)
+    {
+    document.write("设备IP:" + person[x]['ip'] + "   slot" + person[x]['slot'] + "  温度：" + person[x]['current'] + "℃<br>");
+    }
+    </script>
+    </body>
+</html>
