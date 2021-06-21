@@ -10,7 +10,7 @@ import time
 def mail_csv():
     times = time.strftime('%Y-%m-%d',time.localtime())    #获取年月日
     msg = EmailMessage()       #邮件主体
-    msg['from'] = 'xxxx@huawei.com'    #发件人
+    msg['from'] = 'xxxx@hua.com'    #发件人
     msg['subject'] = f'{times}设备温度报表' #邮件主题
     msg['to'] = 'yyyy@hua.com' #收件人
 
