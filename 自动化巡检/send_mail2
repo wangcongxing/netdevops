@@ -1,0 +1,50 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.message import EmailMessage
+from email.utils import make_msgid
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+
+import time
+
+def mail_csv(csvname,high):
+    times = time.strftime('%Y-%m-%d',time.localtime())    #获取年月日
+    msg = EmailMessage()       #邮件主体
+    msg['from'] = 'xxxx@huawei.com'    #发件人
+    msg['subject'] = f'{times}设备温度报表' #邮件主题
+    msg['to'] = 'yyyy@huawei.com' #收件人
+
+    msg.add_alternative('''\
+<html>
+<head>
+    <meta charset='UTF-8'>
+</head>
+    <body>
+    <script>
+    var person=[{'slot': '13', 'current':'56', 'ip': '13.255.198.1'}];
+    for (x in person)
+    {
+    document.write("设备IP:" + person[x]['ip'] + "   slot" + person[x]['slot'] + "  温度：" + person[x]['current'] + "℃<br>");
+    }
+    </script>
+    </body>
+</html>
+''',subtype='html')              # 文本或html内容
+    cont = '<p>abcaaa</p>'
+
+    # print(content)  %(high)
+    # text = MIMEText(content,'html','utf-8')  #文本是plain
+    # text["Content-Disposition"] = 'attachment; filename="c.html"'
+    # msg.attach(text)
+
+    # csvfile = MIMEApplication(open(csvname,'rb').read())       #打开附件
+    # csvfile.add_header('Content-Disposition', 'attachment', filename=csvname)#filename为显示的文件名
+    # msg.attach(csvfile)
+
+    smtp = smtplib.SMTP('smtp.huawei.com','25')       #smtp服务器信息
+    smtp.login('adaa','xxxxx')                   #用户密码
+    # smtp.sendmail(msg['from'],msg['to'],msg.as_string())      #发送邮件
+    smtp.send_message(msg)
+if __name__ == '__main__' :
+    csvname = 'temp_06-21.csv'
+    mail_csv(csvname,high)
