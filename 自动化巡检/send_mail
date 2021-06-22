@@ -2,27 +2,34 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+import jinja2
 import time
 
-times = time.strftime('%Y-%m-%d',time.localtime())    #获取年月日
-
-msg = MIMEMultipart()       #邮件主体
-msg['from'] = 'zouzhihao1@huawei.com'    #发件人
-msg['subject'] = f'{times}小网设备温度报表' #邮件主题
-msg['to'] = 'zouzhihao1@huawei.com' #收件人
-# msg['cc'] = 'aa@huawei.com'    #抄送人
-
-#邮件正文
-content = "温度大于55C°的设备有："         #文本或html内容
-text = MIMEText(content,'html','utf-8')  #文本是plain
-msg.attach(text)
-
-#添加附件
-csvfile = MIMEApplication(open('name_ip.csv','rb').read())       #打开附件
-csvfile.add_header('Content-Disposition', 'attachment', filename='name_ip.csv')#filename为显示的文件名
-msg.attach(csvfile)
-
-smtp = smtplib.SMTP('smtp.huawei.com','25')       #smtp服务器信息
-smtp.login('zwx1020858','xxx')                   #用户密码
-smtp.sendmail(msg['from'],msg['to'],msg.as_string())      #发送邮件
+def jinja2_to(temp_name,parameter):               #temp_name为模板名，parameter为传入模板参数
+    jinjafile = jinja2.FileSystemLoader('./')      #模板路径
+    jinjaEnv = jinja2.Environment(loader=jinjafile)     #创建加载器
+    messagejinja = jinjaEnv.get_template(temp_name)    #加载模板
+    jinja2_result = messagejinja.render(temps=parameter)         #输出结果
+    return jinja2_result
+def mail_csv(csvname,temp_name,parameter):           #csvname为附件名，content为邮件正文
+    content = jinja2_to(temp_name,parameter)
+    times = time.strftime('%Y-%m-%d',time.localtime())    #获取年月日
+    msg = MIMEMultipart()       #邮件主体
+    msg['from'] = 'a@hua.com'    #发件人
+    msg['subject'] = f'{times}网络设备温度报表' #邮件主题
+    msg['to'] = 'b@hua.com' #收件人
+    text = MIMEText(content,'html','utf-8')  #文本是plain
+    msg.attach(text)
+    csvfile = MIMEApplication(open(csvname,'rb').read())       #打开附件
+    csvfile.add_header('Content-Disposition', 'attachment', filename=csvname)#filename为显示的文件名
+    msg.attach(csvfile)
+    smtp = smtplib.SMTP('smtp.hua.com','25')       #smtp服务器信息
+    smtp.login('username','password')                   #用户密码
+    smtp.sendmail(msg['from'],msg['to'],msg.as_string())      #发送邮件
+if __name__ == '__main__' :
+    csvname = 'temp_06-21.csv'
+    temp_name = 'high.html'
+    high = [{'slot': '13', 'current':'56', 'ip': '11.1.1.1'},
+            {'slot': '12', 'current': '55', 'ip':'11.2.1.1'}]
+    mail_csv(csvname=csvname,temp_name=temp_name,parameter=high)
 
