@@ -13,19 +13,27 @@ def y_S6730(host) :
     return False
 swlist = nr.filter(filter_func=y_S6730)
 
-csvname = f'temp_{time.strftime("%m-%d",time.localtime())}.csv'       #文件格式为temp_日期
-f = open(csvname,'w',newline='')
-writer = csv.DictWriter(f,['ip','slot','status','current'])
-writer.writeheader()
+csvname = f'temp_{time.strftime("%m-%d",time.localtime())}.csv'         #创建csv文件
+f = open(csvname,'w',newline='')            
+writer = csv.DictWriter(f,['ip','slot','current'])          #后续字典根据首行写入    
+writer.writeheader()         #写入csv首行
+high = []       #温度高于55
 def dis_temperature(task) :
     output = task.run(netmiko_send_command,command_string="display temp all",use_textfsm=True)
     out = output.result           #神来之笔，输出结果变成list，不然不可迭代
     for i in out :
-        i['ip'] = task.host.hostname
+        i['ip'] = task.host.hostname       #执行结果包含slot和温度，添加IP
         writer.writerow(i)
+        if int(i['current']) >= 55 :
+            high.append(i)
+        # if not i['status'] == 'Normal' :
+        #     minor.append(i)
     return out
-results = swlist.run(task=dis_temperature)
-
-time.sleep(120)
+results = nr.run(task=dis_temperature)
+time.sleep(60)
 f.close()
-mail_send(csvname=csvname,temp_name='high.html',parameter=high)
+
+
+print(high)
+
+send_main(csvname=csvname,temp_name='high.html',parameter=high)
