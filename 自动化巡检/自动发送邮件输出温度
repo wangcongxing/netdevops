@@ -28,4 +28,4 @@ results = swlist.run(task=dis_temperature)
 
 time.sleep(120)
 f.close()
-mail_csv(csvname,'123')
+mail_send(csvname=csvname,temp_name='high.html',parameter=high)
