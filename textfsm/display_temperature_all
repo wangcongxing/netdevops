@@ -1,0 +1,5 @@
+Value SLOT (\d*)
+Value CURRENT (\d+)
+
+Start
+  ^ ${SLOT}.*Normal\W+${CURRENT}.+ -> Record
